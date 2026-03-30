@@ -266,23 +266,34 @@
     const voiceSelect = document.getElementById('voiceSelect');
     const testBtn = document.getElementById('testVoice');
 
-    // Populate voice dropdown
+    // Populate voice dropdown - English only (US, British, Australian)
     function loadVoices() {
       const voices = window.speechSynthesis.getVoices();
       if (!voices.length) return;
       voiceSelect.innerHTML = '';
-      // Show English voices first, then others
-      const english = voices.filter(v => v.lang.startsWith('en'));
-      const others = voices.filter(v => !v.lang.startsWith('en'));
-      [...english, ...others].forEach((v, i) => {
+      // Only keep English voices: en-US, en-GB, en-AU
+      const allowed = ['en-US', 'en-GB', 'en-AU', 'en_US', 'en_GB', 'en_AU'];
+      const english = voices.filter(v =>
+        allowed.some(a => v.lang.replace('_','-').toLowerCase() === a.toLowerCase()) ||
+        v.lang.toLowerCase() === 'en'
+      );
+      if (!english.length) {
+        // Fallback if no exact match - grab anything starting with 'en'
+        voices.filter(v => v.lang.startsWith('en')).forEach(v => english.push(v));
+      }
+      const labels = { 'en-US': 'American', 'en-GB': 'British', 'en-AU': 'Australian' };
+      english.forEach(v => {
         const opt = document.createElement('option');
         opt.value = voices.indexOf(v);
-        opt.textContent = v.name + ' (' + v.lang + ')';
+        const accent = labels[v.lang.replace('_','-')] || 'English';
+        opt.textContent = v.name + ' — ' + accent;
         voiceSelect.appendChild(opt);
       });
       // Restore saved choice
       const saved = localStorage.getItem('southernVoice');
-      if (saved) voiceSelect.value = saved;
+      if (saved && voiceSelect.querySelector('[value="' + saved + '"]')) {
+        voiceSelect.value = saved;
+      }
     }
 
     // Save voice choice
