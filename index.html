@@ -128,6 +128,45 @@
       transform: translateY(0);
     }
 
+    .voice-picker {
+      position: fixed;
+      bottom: 1.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .voice-picker label {
+      color: #888;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .voice-picker select {
+      background: #2a2a4a;
+      color: #e0e0e0;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.85rem;
+      max-width: 200px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .voice-test {
+      background: #2a2a4a;
+      color: #e0e0e0;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
     .glow {
       animation: pulse-glow 2s infinite;
     }
@@ -149,6 +188,12 @@
 
   <div class="saying-box">
     <p class="saying-text" id="sayingText"></p>
+  </div>
+
+  <div class="voice-picker">
+    <label for="voiceSelect">Voice:</label>
+    <select id="voiceSelect"></select>
+    <button class="voice-test" id="testVoice">Test</button>
   </div>
 
   <script>
@@ -218,6 +263,49 @@
     let lastIndex = -1;
     const button = document.getElementById('theButton');
     const text = document.getElementById('sayingText');
+    const voiceSelect = document.getElementById('voiceSelect');
+    const testBtn = document.getElementById('testVoice');
+
+    // Populate voice dropdown
+    function loadVoices() {
+      const voices = window.speechSynthesis.getVoices();
+      if (!voices.length) return;
+      voiceSelect.innerHTML = '';
+      // Show English voices first, then others
+      const english = voices.filter(v => v.lang.startsWith('en'));
+      const others = voices.filter(v => !v.lang.startsWith('en'));
+      [...english, ...others].forEach((v, i) => {
+        const opt = document.createElement('option');
+        opt.value = voices.indexOf(v);
+        opt.textContent = v.name + ' (' + v.lang + ')';
+        voiceSelect.appendChild(opt);
+      });
+      // Restore saved choice
+      const saved = localStorage.getItem('southernVoice');
+      if (saved) voiceSelect.value = saved;
+    }
+
+    // Save voice choice
+    voiceSelect.addEventListener('change', () => {
+      localStorage.setItem('southernVoice', voiceSelect.value);
+    });
+
+    function speakText(msg) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(msg);
+      utter.rate = 0.85;
+      utter.pitch = 0.9;
+      const voices = window.speechSynthesis.getVoices();
+      const chosen = voices[parseInt(voiceSelect.value)];
+      if (chosen) utter.voice = chosen;
+      window.speechSynthesis.speak(utter);
+    }
+
+    // Test button - speaks a sample saying
+    testBtn.addEventListener('click', () => {
+      speakText("Well butter my butt and call me a biscuit!");
+    });
 
     function showSaying() {
       let idx;
@@ -231,19 +319,7 @@
       setTimeout(() => {
         text.textContent = sayings[idx];
         text.classList.add('show');
-
-        // Read it out loud in a southern-ish voice
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const utter = new SpeechSynthesisUtterance(sayings[idx]);
-          utter.rate = 0.85;
-          utter.pitch = 0.9;
-          // Try to pick a US English voice
-          const voices = window.speechSynthesis.getVoices();
-          const southern = voices.find(v => v.lang === 'en-US') || voices[0];
-          if (southern) utter.voice = southern;
-          window.speechSynthesis.speak(utter);
-        }
+        speakText(sayings[idx]);
       }, 150);
     }
 
@@ -254,10 +330,10 @@
       showSaying();
     });
 
-    // Pre-load voices (needed on some phones)
+    // Load voices (fires async on most browsers)
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.getVoices();
-      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
     }
 
     // Service worker registration
