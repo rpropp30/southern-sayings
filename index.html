@@ -53,6 +53,7 @@
       background: #8b0000;
       box-shadow: 0 8px 0 #5c0000, 0 12px 20px rgba(0,0,0,0.5);
       transition: box-shadow 0.1s, transform 0.1s;
+      pointer-events: none;
     }
 
     .big-red-button {
@@ -218,7 +219,7 @@
     const button = document.getElementById('theButton');
     const text = document.getElementById('sayingText');
 
-    button.addEventListener('click', () => {
+    function showSaying() {
       let idx;
       do {
         idx = Math.floor(Math.random() * sayings.length);
@@ -230,8 +231,34 @@
       setTimeout(() => {
         text.textContent = sayings[idx];
         text.classList.add('show');
+
+        // Read it out loud in a southern-ish voice
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(sayings[idx]);
+          utter.rate = 0.85;
+          utter.pitch = 0.9;
+          // Try to pick a US English voice
+          const voices = window.speechSynthesis.getVoices();
+          const southern = voices.find(v => v.lang === 'en-US') || voices[0];
+          if (southern) utter.voice = southern;
+          window.speechSynthesis.speak(utter);
+        }
       }, 150);
+    }
+
+    // Support both click and touch
+    button.addEventListener('click', showSaying);
+    button.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      showSaying();
     });
+
+    // Pre-load voices (needed on some phones)
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
 
     // Service worker registration
     if ('serviceWorker' in navigator) {
