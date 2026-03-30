@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a1a2e">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.svg">
+  <title>Southern Sayings</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1a1a2e;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    h1 {
+      color: #e0e0e0;
+      font-size: 1.4rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-weight: 300;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .button-container {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin-bottom: 2.5rem;
+    }
+
+    .button-shadow {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: #8b0000;
+      box-shadow: 0 8px 0 #5c0000, 0 12px 20px rgba(0,0,0,0.5);
+      transition: box-shadow 0.1s, transform 0.1s;
+    }
+
+    .big-red-button {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      background: radial-gradient(circle at 35% 35%, #ff4444, #cc0000 50%, #990000);
+      box-shadow:
+        inset 0 -8px 15px rgba(0,0,0,0.3),
+        inset 0 8px 15px rgba(255,255,255,0.15),
+        0 0 30px rgba(255,0,0,0.3);
+      transition: transform 0.1s, box-shadow 0.1s;
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    .big-red-button:active {
+      transform: translateX(-50%) translateY(6px);
+      box-shadow:
+        inset 0 -4px 10px rgba(0,0,0,0.3),
+        inset 0 4px 10px rgba(255,255,255,0.1),
+        0 0 15px rgba(255,0,0,0.2);
+    }
+
+    .big-red-button:active + .button-shadow {
+      box-shadow: 0 2px 0 #5c0000, 0 4px 10px rgba(0,0,0,0.5);
+    }
+
+    .button-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: rgba(255,255,255,0.9);
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      pointer-events: none;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .saying-box {
+      width: 90%;
+      max-width: 400px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .saying-text {
+      color: #f5deb3;
+      font-size: 1.3rem;
+      line-height: 1.6;
+      font-style: italic;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+
+    .saying-text.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .glow {
+      animation: pulse-glow 2s infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: inset 0 -8px 15px rgba(0,0,0,0.3), inset 0 8px 15px rgba(255,255,255,0.15), 0 0 30px rgba(255,0,0,0.3); }
+      50% { box-shadow: inset 0 -8px 15px rgba(0,0,0,0.3), inset 0 8px 15px rgba(255,255,255,0.15), 0 0 50px rgba(255,0,0,0.5); }
+    }
+  </style>
+</head>
+<body>
+  <h1>Southern Wisdom</h1>
+
+  <div class="button-container">
+    <button class="big-red-button glow" id="theButton" aria-label="Get a saying"></button>
+    <div class="button-shadow"></div>
+    <div class="button-label">PUSH IT</div>
+  </div>
+
+  <div class="saying-box">
+    <p class="saying-text" id="sayingText"></p>
+  </div>
+
+  <script>
+    const sayings = [
+      "I'm lost like a ball in high weeds.",
+      "Well butter my butt and call me a biscuit!",
+      "He's about as useful as a screen door on a submarine.",
+      "She's busier than a one-legged cat in a sandbox.",
+      "That dog won't hunt.",
+      "He's so country he thinks a seven-course meal is a possum and a six-pack.",
+      "It's hotter than a billy goat in a pepper patch.",
+      "She could start an argument in an empty house.",
+      "He's got enough money to burn a wet mule.",
+      "I'm finer than frog hair split four ways.",
+      "That's about as easy as nailing Jell-O to a tree.",
+      "She's madder than a wet hen.",
+      "He's so slow he couldn't catch a cold.",
+      "I'm sweatin' like a sinner in church.",
+      "She's prettier than a glob of butter meltin' on a stack of wheat cakes.",
+      "He don't know whether to scratch his watch or wind his butt.",
+      "That boy's as sharp as a bowling ball.",
+      "I'm so hungry I could eat the north end of a southbound goat.",
+      "Well, don't that just butter your grits!",
+      "He's tighter than bark on a tree.",
+      "She's runnin' around like a chicken with its head cut off.",
+      "That's slicker than snot on a doorknob.",
+      "He couldn't pour water out of a boot with the instructions on the heel.",
+      "I'm happier than a tornado in a trailer park.",
+      "She's tougher than a two-dollar steak.",
+      "He's nuttier than a squirrel's breakfast.",
+      "That makes about as much sense as tits on a bull.",
+      "I feel like I've been rode hard and put up wet.",
+      "He's all hat and no cattle.",
+      "She's got more nerve than a bum tooth.",
+      "I'm busier than a one-armed paper hanger.",
+      "He's dumber than a box of rocks.",
+      "That went over like a fart in church.",
+      "She's meaner than a striped snake.",
+      "He's older than dirt and twice as dusty.",
+      "I wouldn't trust him as far as I could throw him.",
+      "Well, hush my mouth and call me Shirley!",
+      "He's so ugly he'd make a freight train take a dirt road.",
+      "She's got more excuses than a politician on election day.",
+      "That's finer than a frog hair and twice as curly.",
+      "I'm tireder than a one-legged man at a butt-kickin' contest.",
+      "He ain't got the sense God gave a goose.",
+      "She's wilder than a peach orchard boar.",
+      "If brains were dynamite, he couldn't blow his nose.",
+      "I'm nervous as a long-tailed cat in a room full of rockin' chairs.",
+      "He's crooked as a dog's hind leg.",
+      "That's about as fun as a root canal at a rodeo.",
+      "Well, I'll be dipped in honey and thrown to the bears!",
+      "She's got more stories than a library and none of 'em are true.",
+      "He's richer than six feet up a bull's behind.",
+      "I'm confused as a goat on AstroTurf.",
+      "That's rougher than a corncob in an outhouse.",
+      "He's lazier than a cut dog on a sunny porch.",
+      "She talks so much she'd give an aspirin a headache.",
+      "I'm colder than a well digger's backside in January.",
+      "He's slippery as a pocket full of pudding.",
+      "If it was rainin' cats and dogs, he'd step in a poodle.",
+      "She's got more opinions than a fence has posts.",
+      "He's wound tighter than a two-dollar watch.",
+      "Well, that just dills my pickle!"
+    ];
+
+    let lastIndex = -1;
+    const button = document.getElementById('theButton');
+    const text = document.getElementById('sayingText');
+
+    button.addEventListener('click', () => {
+      let idx;
+      do {
+        idx = Math.floor(Math.random() * sayings.length);
+      } while (idx === lastIndex && sayings.length > 1);
+      lastIndex = idx;
+
+      text.classList.remove('show');
+
+      setTimeout(() => {
+        text.textContent = sayings[idx];
+        text.classList.add('show');
+      }, 150);
+    });
+
+    // Service worker registration
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
