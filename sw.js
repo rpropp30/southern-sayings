@@ -1,4 +1,4 @@
-const CACHE_NAME = 'southern-sayings-v1';
+const CACHE_NAME = 'southern-sayings-v4';
 const ASSETS = ['./index.html', './manifest.json', './icon-192.svg', './icon-512.svg'];
 
 self.addEventListener('install', e => {
@@ -13,6 +13,15 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
+// Network first, fall back to cache - so updates always come through
 self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+  e.respondWith(
+    fetch(e.request)
+      .then(response => {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
+        return response;
+      })
+      .catch(() => caches.match(e.request))
+  );
 });
