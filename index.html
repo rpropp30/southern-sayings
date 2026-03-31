@@ -172,45 +172,68 @@
 
     .category-label.show { opacity: 1; }
 
-    /* Voice Picker */
-    .voice-picker {
+    /* Voice Controls */
+    .voice-controls {
       position: fixed;
-      bottom: 0.8rem;
-      left: 50%;
-      transform: translateX(-50%);
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #12122a;
+      border-top: 1px solid #333;
+      padding: 0.6rem 1rem 0.8rem;
+    }
+
+    .voice-row {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      background: #1a1a2e;
-      padding: 0.4rem 0.8rem;
-      border-radius: 8px;
+      margin-bottom: 0.4rem;
     }
 
-    .voice-picker label {
+    .voice-row:last-child { margin-bottom: 0; }
+
+    .voice-controls label {
       color: #888;
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 1px;
+      min-width: 45px;
     }
 
-    .voice-picker select {
+    .voice-controls select {
       background: #2a2a4a;
       color: #e0e0e0;
       border: 1px solid #444;
       border-radius: 6px;
       padding: 0.3rem 0.5rem;
       font-size: 0.8rem;
-      max-width: 180px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .voice-controls input[type="range"] {
+      flex: 1;
+      min-width: 0;
+      accent-color: #cc0000;
+      height: 20px;
+    }
+
+    .range-val {
+      color: #aaa;
+      font-size: 0.7rem;
+      min-width: 28px;
+      text-align: right;
     }
 
     .voice-test {
-      background: #2a2a4a;
-      color: #e0e0e0;
-      border: 1px solid #444;
+      background: #cc0000;
+      color: #fff;
+      border: none;
       border-radius: 6px;
-      padding: 0.3rem 0.5rem;
+      padding: 0.3rem 0.6rem;
       font-size: 0.7rem;
       cursor: pointer;
+      white-space: nowrap;
     }
 
     @keyframes pulse-glow {
@@ -235,10 +258,22 @@
   </div>
   <div class="category-label" id="catLabel"></div>
 
-  <div class="voice-picker">
-    <label for="voiceSelect">Voice:</label>
-    <select id="voiceSelect"></select>
-    <button class="voice-test" id="testVoice">Test</button>
+  <div class="voice-controls">
+    <div class="voice-row">
+      <label for="voiceSelect">Voice</label>
+      <select id="voiceSelect"></select>
+      <button class="voice-test" id="testVoice">Test</button>
+    </div>
+    <div class="voice-row">
+      <label for="pitchRange">Pitch</label>
+      <input type="range" id="pitchRange" min="0.3" max="2" step="0.1" value="0.9">
+      <span class="range-val" id="pitchVal">0.9</span>
+    </div>
+    <div class="voice-row">
+      <label for="speedRange">Speed</label>
+      <input type="range" id="speedRange" min="0.3" max="1.5" step="0.1" value="0.85">
+      <span class="range-val" id="speedVal">0.85</span>
+    </div>
   </div>
 
   <script>
@@ -500,6 +535,26 @@
     const catLabel = document.getElementById('catLabel');
     const voiceSelect = document.getElementById('voiceSelect');
     const testBtn = document.getElementById('testVoice');
+    const pitchRange = document.getElementById('pitchRange');
+    const speedRange = document.getElementById('speedRange');
+    const pitchVal = document.getElementById('pitchVal');
+    const speedVal = document.getElementById('speedVal');
+
+    // Restore saved pitch/speed
+    const savedPitch = localStorage.getItem('southernPitch');
+    const savedSpeed = localStorage.getItem('southernSpeed');
+    if (savedPitch) { pitchRange.value = savedPitch; pitchVal.textContent = savedPitch; }
+    if (savedSpeed) { speedRange.value = savedSpeed; speedVal.textContent = savedSpeed; }
+
+    pitchRange.addEventListener('input', () => {
+      pitchVal.textContent = pitchRange.value;
+      localStorage.setItem('southernPitch', pitchRange.value);
+    });
+
+    speedRange.addEventListener('input', () => {
+      speedVal.textContent = speedRange.value;
+      localStorage.setItem('southernSpeed', speedRange.value);
+    });
 
     // Build category chips
     function buildChips() {
@@ -586,8 +641,8 @@
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(msg);
-      utter.rate = 0.85;
-      utter.pitch = 0.9;
+      utter.rate = parseFloat(speedRange.value);
+      utter.pitch = parseFloat(pitchRange.value);
       const voices = window.speechSynthesis.getVoices();
       const chosen = voices[parseInt(voiceSelect.value)];
       if (chosen) utter.voice = chosen;
