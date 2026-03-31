@@ -15,31 +15,64 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #1a1a2e;
-      height: 100dvh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      overflow: hidden;
+      overflow-x: hidden;
       -webkit-user-select: none;
       user-select: none;
+      padding-bottom: 5rem;
     }
 
     h1 {
       color: #e0e0e0;
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       text-align: center;
-      margin-bottom: 2rem;
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
       font-weight: 300;
       letter-spacing: 2px;
       text-transform: uppercase;
     }
 
+    /* Category Chips */
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0 0.8rem;
+      margin-bottom: 1.2rem;
+      max-width: 420px;
+    }
+
+    .cat-chip {
+      background: #2a2a4a;
+      color: #aaa;
+      border: 1px solid #3a3a5a;
+      border-radius: 20px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+      white-space: nowrap;
+    }
+
+    .cat-chip.active {
+      background: #cc0000;
+      color: #fff;
+      border-color: #ff4444;
+    }
+
+    /* Button */
     .button-container {
       position: relative;
-      width: 220px;
-      height: 220px;
-      margin-bottom: 2.5rem;
+      width: 200px;
+      height: 200px;
+      margin-bottom: 1.5rem;
+      flex-shrink: 0;
     }
 
     .button-shadow {
@@ -47,12 +80,11 @@
       bottom: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 200px;
-      height: 200px;
+      width: 180px;
+      height: 180px;
       border-radius: 50%;
       background: #8b0000;
       box-shadow: 0 8px 0 #5c0000, 0 12px 20px rgba(0,0,0,0.5);
-      transition: box-shadow 0.1s, transform 0.1s;
       pointer-events: none;
     }
 
@@ -61,8 +93,8 @@
       top: 0;
       left: 50%;
       transform: translateX(-50%);
-      width: 200px;
-      height: 200px;
+      width: 180px;
+      height: 180px;
       border-radius: 50%;
       border: none;
       cursor: pointer;
@@ -74,6 +106,8 @@
       transition: transform 0.1s, box-shadow 0.1s;
       -webkit-tap-highlight-color: transparent;
       outline: none;
+      z-index: 2;
+      animation: pulse-glow 2s infinite;
     }
 
     .big-red-button:active {
@@ -84,38 +118,36 @@
         0 0 15px rgba(255,0,0,0.2);
     }
 
-    .big-red-button:active + .button-shadow {
-      box-shadow: 0 2px 0 #5c0000, 0 4px 10px rgba(0,0,0,0.5);
-    }
-
     .button-label {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       color: rgba(255,255,255,0.9);
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 3px;
       pointer-events: none;
       text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+      z-index: 3;
     }
 
+    /* Saying */
     .saying-box {
       width: 90%;
       max-width: 400px;
-      min-height: 100px;
+      min-height: 80px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      padding: 1rem 1.5rem;
       text-align: center;
     }
 
     .saying-text {
       color: #f5deb3;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       line-height: 1.6;
       font-style: italic;
       opacity: 0;
@@ -128,19 +160,35 @@
       transform: translateY(0);
     }
 
+    .category-label {
+      color: #666;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .category-label.show { opacity: 1; }
+
+    /* Voice Picker */
     .voice-picker {
       position: fixed;
-      bottom: 1.2rem;
+      bottom: 0.8rem;
       left: 50%;
       transform: translateX(-50%);
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      background: #1a1a2e;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
     }
 
     .voice-picker label {
       color: #888;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
@@ -150,11 +198,9 @@
       color: #e0e0e0;
       border: 1px solid #444;
       border-radius: 6px;
-      padding: 0.4rem 0.6rem;
-      font-size: 0.85rem;
-      max-width: 200px;
-      -webkit-appearance: none;
-      appearance: none;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.8rem;
+      max-width: 180px;
     }
 
     .voice-test {
@@ -162,13 +208,9 @@
       color: #e0e0e0;
       border: 1px solid #444;
       border-radius: 6px;
-      padding: 0.4rem 0.6rem;
-      font-size: 0.75rem;
+      padding: 0.3rem 0.5rem;
+      font-size: 0.7rem;
       cursor: pointer;
-    }
-
-    .glow {
-      animation: pulse-glow 2s infinite;
     }
 
     @keyframes pulse-glow {
@@ -180,8 +222,10 @@
 <body>
   <h1>Southern Wisdom</h1>
 
+  <div class="categories" id="categories"></div>
+
   <div class="button-container">
-    <button class="big-red-button glow" id="theButton" aria-label="Get a saying"></button>
+    <button class="big-red-button" id="theButton" aria-label="Get a saying"></button>
     <div class="button-shadow"></div>
     <div class="button-label">PUSH IT</div>
   </div>
@@ -189,6 +233,7 @@
   <div class="saying-box">
     <p class="saying-text" id="sayingText"></p>
   </div>
+  <div class="category-label" id="catLabel"></div>
 
   <div class="voice-picker">
     <label for="voiceSelect">Voice:</label>
@@ -197,106 +242,253 @@
   </div>
 
   <script>
-    const sayings = [
-      "I'm lost like a ball in high weeds.",
-      "Well butter my butt and call me a biscuit!",
-      "He's about as useful as a screen door on a submarine.",
-      "She's busier than a one-legged cat in a sandbox.",
-      "That dog won't hunt.",
-      "He's so country he thinks a seven-course meal is a possum and a six-pack.",
-      "It's hotter than a billy goat in a pepper patch.",
-      "She could start an argument in an empty house.",
-      "He's got enough money to burn a wet mule.",
-      "I'm finer than frog hair split four ways.",
-      "That's about as easy as nailing Jell-O to a tree.",
-      "She's madder than a wet hen.",
-      "He's so slow he couldn't catch a cold.",
-      "I'm sweatin' like a sinner in church.",
-      "She's prettier than a glob of butter meltin' on a stack of wheat cakes.",
-      "He don't know whether to scratch his watch or wind his butt.",
-      "That boy's as sharp as a bowling ball.",
-      "I'm so hungry I could eat the north end of a southbound goat.",
-      "Well, don't that just butter your grits!",
-      "He's tighter than bark on a tree.",
-      "She's runnin' around like a chicken with its head cut off.",
-      "That's slicker than snot on a doorknob.",
-      "He couldn't pour water out of a boot with the instructions on the heel.",
-      "I'm happier than a tornado in a trailer park.",
-      "She's tougher than a two-dollar steak.",
-      "He's nuttier than a squirrel's breakfast.",
-      "That makes about as much sense as tits on a bull.",
-      "I feel like I've been rode hard and put up wet.",
-      "He's all hat and no cattle.",
-      "She's got more nerve than a bum tooth.",
-      "I'm busier than a one-armed paper hanger.",
-      "He's dumber than a box of rocks.",
-      "That went over like a fart in church.",
-      "She's meaner than a striped snake.",
-      "He's older than dirt and twice as dusty.",
-      "I wouldn't trust him as far as I could throw him.",
-      "Well, hush my mouth and call me Shirley!",
-      "He's so ugly he'd make a freight train take a dirt road.",
-      "She's got more excuses than a politician on election day.",
-      "That's finer than a frog hair and twice as curly.",
-      "I'm tireder than a one-legged man at a butt-kickin' contest.",
-      "He ain't got the sense God gave a goose.",
-      "She's wilder than a peach orchard boar.",
-      "If brains were dynamite, he couldn't blow his nose.",
-      "I'm nervous as a long-tailed cat in a room full of rockin' chairs.",
-      "He's crooked as a dog's hind leg.",
-      "That's about as fun as a root canal at a rodeo.",
-      "Well, I'll be dipped in honey and thrown to the bears!",
-      "She's got more stories than a library and none of 'em are true.",
-      "He's richer than six feet up a bull's behind.",
-      "I'm confused as a goat on AstroTurf.",
-      "That's rougher than a corncob in an outhouse.",
-      "He's lazier than a cut dog on a sunny porch.",
-      "She talks so much she'd give an aspirin a headache.",
-      "I'm colder than a well digger's backside in January.",
-      "He's slippery as a pocket full of pudding.",
-      "If it was rainin' cats and dogs, he'd step in a poodle.",
-      "She's got more opinions than a fence has posts.",
-      "He's wound tighter than a two-dollar watch.",
-      "Well, that just dills my pickle!"
-    ];
+    const allSayings = {
+      "Southern Sayings": [
+        "I'm lost like a ball in high weeds.",
+        "Well butter my butt and call me a biscuit!",
+        "He's about as useful as a screen door on a submarine.",
+        "She's busier than a one-legged cat in a sandbox.",
+        "That dog won't hunt.",
+        "It's hotter than a billy goat in a pepper patch.",
+        "I'm finer than frog hair split four ways.",
+        "That's about as easy as nailing Jell-O to a tree.",
+        "I'm sweatin' like a sinner in church.",
+        "He don't know whether to scratch his watch or wind his butt.",
+        "That boy's as sharp as a bowling ball.",
+        "Well, don't that just butter your grits!",
+        "That's slicker than snot on a doorknob.",
+        "He couldn't pour water out of a boot with the instructions on the heel.",
+        "I'm nervous as a long-tailed cat in a room full of rockin' chairs.",
+        "Well, that just dills my pickle!",
+        "He's tighter than bark on a tree.",
+        "I feel like I've been rode hard and put up wet.",
+        "If it was rainin' cats and dogs, he'd step in a poodle.",
+        "He's wound tighter than a two-dollar watch."
+      ],
 
+      "Funny Insults": [
+        "He's so dumb he could throw himself at the ground and miss.",
+        "She's a few fries short of a Happy Meal.",
+        "If his brains were leather, he couldn't saddle a flea.",
+        "The wheel's spinning but the hamster's dead.",
+        "He's got the personality of a speed bump.",
+        "She's sharp as a marble.",
+        "He's about as bright as a burnt-out light bulb.",
+        "If you were any slower, you'd be going backwards.",
+        "He's so dense, light bends around him.",
+        "She's got the charm of a wet sock.",
+        "He fell out of the stupid tree and hit every branch on the way down.",
+        "She's one taco short of a combination plate.",
+        "He's proof that even evolution makes mistakes.",
+        "If ignorance is bliss, he's the happiest man alive.",
+        "She couldn't find her way out of a paper bag with a flashlight."
+      ],
+
+      "Redneck Wisdom": [
+        "Never squat with your spurs on.",
+        "Don't wrestle with a pig. You both get dirty, but the pig enjoys it.",
+        "If you find yourself in a hole, the first thing to do is stop diggin'.",
+        "Never miss a good chance to shut up.",
+        "The quickest way to double your money is to fold it and put it back in your pocket.",
+        "Always drink upstream from the herd.",
+        "If you're gonna be dumb, you better be tough.",
+        "Never approach a bull from the front, a horse from the rear, or a fool from any direction.",
+        "It don't take a genius to smell a skunk.",
+        "You can't get ahead if you're trying to get even.",
+        "If you lie down with dogs, you wake up with fleas.",
+        "A closed mouth gathers no foot.",
+        "The best way to eat an elephant is one bite at a time.",
+        "Even a blind squirrel finds a nut once in a while.",
+        "You can put boots in the oven, but that don't make 'em biscuits."
+      ],
+
+      "Church Lady": [
+        "Bless your heart, you can't help it.",
+        "Well, I'll just pray for you, honey.",
+        "She means well... bless her heart.",
+        "I'm not gossipin', I'm just sharin' prayer requests.",
+        "Well isn't that... special.",
+        "Lord willin' and the creek don't rise.",
+        "I'll pray about it, which means no.",
+        "God love him, he tries.",
+        "She's precious... in her own way.",
+        "That's between him and the Lord now.",
+        "Well, the devil's busy today.",
+        "I would never say anything bad about her... but let me tell you.",
+        "Bless his heart, he was behind the door when God handed out brains.",
+        "Well, God don't make junk, but He does make fixer-uppers.",
+        "I'm not judgin', I'm just concerned for her soul."
+      ],
+
+      "Grandma's Threats": [
+        "I'll slap you into next Tuesday.",
+        "I brought you into this world, I can take you out.",
+        "Don't make me take off this belt.",
+        "I'll give you somethin' to cry about.",
+        "Keep rollin' your eyes, maybe you'll find a brain back there.",
+        "I'll knock you into the middle of next week.",
+        "You better straighten up or I'll straighten you out.",
+        "I'm gonna jerk a knot in your tail.",
+        "You're cruisin' for a bruisin'.",
+        "Wait till your daddy gets home.",
+        "Do I look like one of your little friends?",
+        "I'll snatch you bald-headed.",
+        "Fix your face before I fix it for you.",
+        "I wish you WOULD.",
+        "You must have lost your ever-lovin' mind."
+      ],
+
+      "Country Compliments": [
+        "She's prettier than a glob of butter meltin' on a stack of wheat cakes.",
+        "He cleans up like a new penny.",
+        "She's finer than a frog hair split four ways and sanded down.",
+        "That boy's got more guts than you can hang on a fence.",
+        "She could charm the dew right off a honeysuckle.",
+        "He's tougher than a pine knot.",
+        "She's sweeter than sweet tea on a Sunday.",
+        "That man could sell ice to an Eskimo.",
+        "She's got more class than a schoolhouse.",
+        "He's solid as a stump.",
+        "She's bright as a new copper penny.",
+        "That ol' boy's got horse sense.",
+        "She's got a smile that'd stop a clock... in a good way.",
+        "He's good people.",
+        "She could talk a dog off a meat wagon... and that's a talent."
+      ],
+
+      "Hold My Beer": [
+        "Hold my beer, I've done this before... kinda.",
+        "Watch this! ...said every man before an ER visit.",
+        "It ain't stupid if it works... but it usually don't.",
+        "I don't need instructions, I've got confidence.",
+        "What's the worst that could happen? ...Famous last words.",
+        "Trust me, my cousin did this and he's mostly fine.",
+        "Safety third!",
+        "I saw this on YouTube, how hard can it be?",
+        "I ain't never done this before, but there's a first time for everything.",
+        "That fence ain't THAT electric.",
+        "The warranty was already voided anyway.",
+        "Physics is more of a suggestion than a law.",
+        "If it was dangerous, they'd have put up a bigger sign.",
+        "I know a shortcut... through the woods... at night.",
+        "Duct tape fixes everything. Except this. Maybe."
+      ],
+
+      "Porch Philosophy": [
+        "You can't steer a parked car.",
+        "The sun don't shine on the same dog's tail every day.",
+        "Every tater's got a rotten spot.",
+        "You can't unsqueeze a lemon.",
+        "Even a stopped clock is right twice a day.",
+        "The tallest weed gets whacked first.",
+        "Life's like a jar of jalapeños — what you do today might burn you tomorrow.",
+        "You can't plow a field by turnin' it over in your mind.",
+        "Still water runs deep, but so does a swamp.",
+        "A smooth sea never made a skilled fisherman.",
+        "Don't count your chickens before they cross the road.",
+        "You can't fall off the floor.",
+        "The creek don't rise just 'cause you're thirsty.",
+        "Even a blind pig finds an acorn now and then.",
+        "If wishes were horses, beggars would ride."
+      ],
+
+      "Weather Talk": [
+        "It's hotter than two rats wrestlin' in a wool sock.",
+        "It's colder than a witch's elbow in a brass bra.",
+        "It's rainin' like a cow peein' on a flat rock.",
+        "It's so dry the trees are bribin' the dogs.",
+        "It's humid enough to drown a catfish on dry land.",
+        "It's blowin' harder than a mule eatin' briars.",
+        "It's foggy as the inside of a cow.",
+        "It's so hot the chickens are layin' hard-boiled eggs.",
+        "It's colder than a well digger's lunch bucket.",
+        "The wind's blowin' so hard it'd blow a buzzard off a gut wagon.",
+        "It's hotter than a jalapeño's armpit.",
+        "It's so cold even the polar bears are wearin' jackets.",
+        "It's rainin' sideways like the Lord forgot which way was down.",
+        "It's muggier than a swamp frog's Sunday.",
+        "It's so hot I saw a dog chasin' a cat and they were both walkin'."
+      ],
+
+      "Dad Jokes (Southern)": [
+        "What do you call a fake noodle down South? An im-pasta, y'all.",
+        "Why don't eggs tell jokes? They'd crack each other up, bless their hearts.",
+        "I told my wife she was drawing her eyebrows too high. She looked surprised.",
+        "What did the grape say when it got stepped on? Nothin', it just let out a little wine.",
+        "Why did the scarecrow win an award? He was outstanding in his field... unlike my brother-in-law.",
+        "I used to hate facial hair, but then it grew on me.",
+        "What do you call a sleeping dinosaur? A dino-snore, I reckon.",
+        "Why can't a bicycle stand on its own? It's two-tired, just like me after church dinner.",
+        "I'm reading a book on anti-gravity. I can't put it down.",
+        "What do you call a cow with no legs? Ground beef, and that ain't right.",
+        "Why don't skeletons fight each other? They ain't got the guts.",
+        "What did the janitor say when he jumped out of the closet? Supplies!",
+        "I would tell you a construction joke, but I'm still workin' on it.",
+        "Want to hear a joke about paper? Never mind, it's tearable.",
+        "Why did the golfer bring two pairs of pants? In case he got a hole in one, bless his heart."
+      ]
+    };
+
+    const categories = Object.keys(allSayings);
+    let activeCategory = localStorage.getItem('southernCat') || 'all';
     let lastIndex = -1;
+
+    const catContainer = document.getElementById('categories');
     const button = document.getElementById('theButton');
     const text = document.getElementById('sayingText');
+    const catLabel = document.getElementById('catLabel');
     const voiceSelect = document.getElementById('voiceSelect');
     const testBtn = document.getElementById('testVoice');
 
-    // Populate voice dropdown - English only (US, British, Australian)
+    // Build category chips
+    function buildChips() {
+      catContainer.innerHTML = '';
+      // "All" chip
+      const allChip = document.createElement('button');
+      allChip.className = 'cat-chip' + (activeCategory === 'all' ? ' active' : '');
+      allChip.textContent = 'All';
+      allChip.addEventListener('click', () => setCategory('all'));
+      catContainer.appendChild(allChip);
+
+      categories.forEach(cat => {
+        const chip = document.createElement('button');
+        chip.className = 'cat-chip' + (activeCategory === cat ? ' active' : '');
+        chip.textContent = cat;
+        chip.addEventListener('click', () => setCategory(cat));
+        catContainer.appendChild(chip);
+      });
+    }
+
+    function setCategory(cat) {
+      activeCategory = cat;
+      localStorage.setItem('southernCat', cat);
+      buildChips();
+    }
+
+    // Voice
     function loadVoices() {
       const voices = window.speechSynthesis.getVoices();
       if (!voices.length) return;
       voiceSelect.innerHTML = '';
-      // Only keep English voices: en-US, en-GB, en-AU
-      const allowed = ['en-US', 'en-GB', 'en-AU', 'en_US', 'en_GB', 'en_AU'];
+      const allowed = ['en-US', 'en-GB', 'en-AU'];
       const english = voices.filter(v =>
-        allowed.some(a => v.lang.replace('_','-').toLowerCase() === a.toLowerCase()) ||
-        v.lang.toLowerCase() === 'en'
+        allowed.some(a => v.lang.replace('_', '-') === a) || v.lang === 'en'
       );
-      if (!english.length) {
-        // Fallback if no exact match - grab anything starting with 'en'
-        voices.filter(v => v.lang.startsWith('en')).forEach(v => english.push(v));
-      }
+      const fallback = english.length ? english : voices.filter(v => v.lang.startsWith('en'));
       const labels = { 'en-US': 'American', 'en-GB': 'British', 'en-AU': 'Australian' };
-      english.forEach(v => {
+      fallback.forEach(v => {
         const opt = document.createElement('option');
         opt.value = voices.indexOf(v);
-        const accent = labels[v.lang.replace('_','-')] || 'English';
+        const accent = labels[v.lang.replace('_', '-')] || 'English';
         opt.textContent = v.name + ' — ' + accent;
         voiceSelect.appendChild(opt);
       });
-      // Restore saved choice
       const saved = localStorage.getItem('southernVoice');
       if (saved && voiceSelect.querySelector('[value="' + saved + '"]')) {
         voiceSelect.value = saved;
       }
     }
 
-    // Save voice choice
     voiceSelect.addEventListener('change', () => {
       localStorage.setItem('southernVoice', voiceSelect.value);
     });
@@ -313,41 +505,49 @@
       window.speechSynthesis.speak(utter);
     }
 
-    // Test button - speaks a sample saying
     testBtn.addEventListener('click', () => {
       speakText("Well butter my butt and call me a biscuit!");
     });
 
+    // Main button
     function showSaying() {
+      let pool;
+      if (activeCategory === 'all') {
+        pool = categories.flatMap(c => allSayings[c].map(s => ({ text: s, cat: c })));
+      } else {
+        pool = allSayings[activeCategory].map(s => ({ text: s, cat: activeCategory }));
+      }
+
       let idx;
       do {
-        idx = Math.floor(Math.random() * sayings.length);
-      } while (idx === lastIndex && sayings.length > 1);
+        idx = Math.floor(Math.random() * pool.length);
+      } while (idx === lastIndex && pool.length > 1);
       lastIndex = idx;
 
       text.classList.remove('show');
+      catLabel.classList.remove('show');
 
       setTimeout(() => {
-        text.textContent = sayings[idx];
+        text.textContent = pool[idx].text;
         text.classList.add('show');
-        speakText(sayings[idx]);
+        catLabel.textContent = pool[idx].cat;
+        catLabel.classList.add('show');
+        speakText(pool[idx].text);
       }, 150);
     }
 
-    // Support both click and touch
     button.addEventListener('click', showSaying);
     button.addEventListener('touchend', (e) => {
       e.preventDefault();
       showSaying();
     });
 
-    // Load voices (fires async on most browsers)
+    // Init
+    buildChips();
     if ('speechSynthesis' in window) {
       loadVoices();
       window.speechSynthesis.onvoiceschanged = loadVoices;
     }
-
-    // Service worker registration
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
